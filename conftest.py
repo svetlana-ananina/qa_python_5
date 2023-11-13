@@ -11,6 +11,7 @@ import helpers
 def get_driver():
     """ Открываем окно веб-драйвера """
     driver = webdriver.Chrome()
+    #if data._debug: print('\nВеб-драйвер открыт')
     yield driver
 
     # Закрываем драйвер по окончании использования фикстуры

@@ -86,7 +86,8 @@ def open_main_window(driver):
     return driver
 
 
-def register_new_user(driver, name=get_user_name(), login=gen_login(), password=gen_password()):
+#def register_new_user(driver, name=get_user_name(), login=gen_login(), password=gen_password()):
+def register_new_user(driver, name=None, login=None, password=None):
     ''' Функция регистрации, выполняется перед тестами на авторизацию и Личный кабинет.
     Открывает страницу регистрации.
     Выполняет регистрацию.
@@ -100,6 +101,12 @@ def register_new_user(driver, name=get_user_name(), login=gen_login(), password=
     wait_element(driver, loc.REG_BUTTON)
 
     # Вводим данные в поля
+    if name == None:
+        name = get_user_name()
+    if login == None:
+        login = gen_login()
+    if password == None:
+        password = gen_password()
     set_value(driver, loc.USER_NAME_INPUT, name)
     set_value(driver, loc.USER_EMAIL_INPUT, login)
     set_value(driver, loc.USER_PASSWORD_INPUT, password)

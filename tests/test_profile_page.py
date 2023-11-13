@@ -51,6 +51,9 @@ class TestProfilePage:
         # Проверяем, что открылась страница "Личный кабинет"
         assert driver.current_url == url.PROFILE_PAGE_URL
 
+        # Ждем когда полностью откроется страница Личный кабинет
+        helpers.wait_element(driver, loc.PROFILE_PAGE_SAVE_BUTTON)
+
         # Ждем когда появится ссылка на Лого и кликаем на Лого
         helpers.wait_element(driver, loc.PROFILE_PAGE_LOGO_LINK)
         helpers.click_element(driver, loc.PROFILE_PAGE_LOGO_LINK)
@@ -82,6 +85,9 @@ class TestProfilePage:
 
         # Проверяем, что открылась страница "Личный кабинет"
         assert driver.current_url == url.PROFILE_PAGE_URL
+
+        # Ждем когда полностью откроется страница Личный кабинет
+        helpers.wait_element(driver, loc.PROFILE_PAGE_SAVE_BUTTON)
 
         # Ждем когда появится ссылка на Конструктор и кликаем на него
         helpers.wait_element(driver, loc.PROFILE_PAGE_CONSTRUCTOR_LINK)
