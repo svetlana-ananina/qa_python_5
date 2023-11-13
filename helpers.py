@@ -1,10 +1,36 @@
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions
+from random import randint
+from selenium import webdriver
+import pytest
+
+
 
 import data
 from urls import URLS as url
 from locators import Locators as loc
-import helpers
+
+
+def get_user_name():
+    ''' Генерация пароля '''
+    return data.DATA.USER_NAME
+
+
+def gen_login():
+    ''' Генерация email по шаблону '''
+    code = randint(10000, 99999)
+    email = f"svetlana_ananina_2_{code}@yandex.ru"
+    return email
+
+
+def gen_password():
+    ''' Генерация пароля '''
+    return data.DATA.USER_PASSWORD
+
+
+def gen_invalid_password():
+    ''' Генерация неверного пароля '''
+    return data.DATA.INVALID_PASSWORD
 
 
 def set_value(driver, locator, value):
@@ -44,32 +70,95 @@ def is_active(driver, locator):
         Получает название класса выбранного элемента конструктора и проверяет наличие в нем подстроки "current".
         Возвращает True/False
     '''
+
     return "current" in driver.find_element(*locator).get_attribute("class")
 
 
+def open_reg_window(driver):
+    """ Открываем страницу регистрации """
+    driver.get(url.REG_PAGE_URL)
+    return driver
+
+
+def open_main_window(driver):
+    """ Открываем главную страницу """
+    driver.get(url.MAIN_PAGE_URL)
+    return driver
+
+
+def register_new_user(driver, name=get_user_name(), login=gen_login(), password=gen_password()):
+    ''' Функция регистрации, выполняется перед тестами на авторизацию и Личный кабинет.
+    Открывает страницу регистрации.
+    Выполняет регистрацию.
+    Возвращает ссылку на веб-драйвер; логин и пароль
+    '''
+    # Открываем страницу регистрации
+    open_reg_window(driver)
+
+    # Ждем открытия окна регистрации и появления кнопки 'Зарегистрироваться'
+    wait_url(driver, url.REG_PAGE_URL)
+    wait_element(driver, loc.REG_BUTTON)
+
+    # Вводим данные в поля
+    set_value(driver, loc.USER_NAME_INPUT, name)
+    set_value(driver, loc.USER_EMAIL_INPUT, login)
+    set_value(driver, loc.USER_PASSWORD_INPUT, password)
+
+    # Кликаем кнопку "Зарегистрироваться"
+    click_element(driver, loc.REG_BUTTON)
+
+    return login, password
+
+
 def sign_in(driver, login, password):
-    ''' Вспомогательная функция. Выполняет авторизацию, возвращает True/False
-        Предварительно выполнен переход на страницу авторизации/открыта страница авторизации
-     '''
-    # Открываем страницу авторизации и ждем появления кнопки "Войти"
-    helpers.wait_url(driver, url.AUTH_PAGE_URL)
-    helpers.wait_element(driver, loc.LOGIN_BUTTON)
-
+    ''' Вспомогательная функция. Выполняет авторизацию на странице авторизации '''
     # Вводим логин и пароль, кликаем кнопку "Войти"
-    set_value(driver, loc.LOGIN_INPUT, login)
-    set_value(driver, loc.PASSWORD_INPUT, password)
-    click_element(driver, loc.LOGIN_BUTTON)
+    set_value(driver, loc.AUTH_PAGE_LOGIN_FIELD, login)
+    set_value(driver, loc.AUTH_PAGE_PASSWORD_FIELD, password)
+    click_element(driver, loc.AUTH_PAGE_LOGIN_BUTTON)
 
-    # Ждем, что произошел переход на главную страницу
-    helpers.wait_url(driver, url.MAIN_PAGE_URL)
+    return driver
 
-    # Ждем, пока появится кнопка "Войти/оформить"
-    helpers.wait_element(driver, loc.MAIN_PAGE_ANY_BUTTON)
 
-    # Проверяем, что на главной странице появилась кнопка "Оформить заказ" - вместо "Войти в аккаунт"
-    elements = helpers.find_elements(driver, loc.MAIN_PAGE_ORDER_BUTTON)
-    if len(elements) != 1:
-        return False
-    else:
+def check_order_button(driver):
+    """ Проверяем, что на главной странице появилась кнопка "Оформить заказ" """
+    elements = find_elements(driver, loc.MAIN_PAGE_ORDER_BUTTON)
+    if len(elements) == 1:
         return True
+    else:
+        return False
+
+def register_and_login(driver):
+    """ Вспомогательная функция: выполняет регистрацию и авторизацию нового пользователя.
+        Выполняется в начале тестов Личного кабинета
+    """
+    # Вызываем функцию регистрации
+    login, password = register_new_user(driver)
+
+    # Ждем страницу авторизации и кнопку "Войти"
+    wait_url(driver, url.AUTH_PAGE_URL)
+    wait_element(driver, loc.AUTH_PAGE_LOGIN_BUTTON)
+
+    # Открываем главную страницу
+    open_main_window(driver)
+
+    # Ждем, когда откроется главная страница и появится кнопка "Войти в аккаунт"
+    wait_url(driver, url.MAIN_PAGE_URL)
+    wait_element(driver, loc.MAIN_PAGE_LOGIN_BUTTON)
+
+    # Кликаем кнопку "Войти в аккаунт"
+    click_element(driver, loc.MAIN_PAGE_LOGIN_BUTTON)
+
+    # Ждем страницу авторизации и кнопку "Войти"
+    wait_url(driver, url.AUTH_PAGE_URL)
+    wait_element(driver, loc.AUTH_PAGE_LOGIN_BUTTON)
+
+    # Вызываем функцию авторизации
+    sign_in(driver, login, password)
+
+    # Ждем Главную страницу и кнопку "Оформить заказ"/"Войти в аккаунт"
+    wait_url(driver, url.MAIN_PAGE_URL)
+    wait_element(driver, loc.MAIN_PAGE_ANY_BUTTON)
+
+    return driver
 

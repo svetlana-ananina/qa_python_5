@@ -11,12 +11,3 @@ class DATA:
     USER_PASSWORD = '123456'
     INVALID_PASSWORD = '123'
 
-
-# Класс для передачи регистрационных данных и ссылки на открытое окно браузера
-class AuthData:
-    def __init__(self):
-        self.driver = None
-        self.login = None
-        self.password = None
-        self.registration_flg = False
-

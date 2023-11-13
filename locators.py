@@ -35,9 +35,9 @@ class Locators:
     PROFILE_PAGE_SAVE_BUTTON = (By.XPATH, ".//body//main//button[text()='Сохранить']")      # Кнопка "Сохранить" на странице Личный кабинет
     PROFILE_PAGE_EXIT_BUTTON = (By.XPATH, ".//body//main//button[text()='Выход']")          # Кнопка "Выход" на странице Личный кабинет
     # Форма авторизации
-    LOGIN_BUTTON = (By.XPATH, ".//button[text()='Войти']")                                  # Кнопка "Войти" на странице авторизации
-    LOGIN_INPUT = (By.XPATH, ".//input[@name='name']")                                      # Поле ввода логина
-    PASSWORD_INPUT = (By.XPATH, ".//input[@name='Пароль']")                                 # Поле ввода пароля
+    AUTH_PAGE_LOGIN_BUTTON = (By.XPATH, ".//button[text()='Войти']")                        # Кнопка "Войти" на странице авторизации
+    AUTH_PAGE_LOGIN_FIELD = (By.XPATH, ".//input[@name='name']")                            # Поле ввода логина
+    AUTH_PAGE_PASSWORD_FIELD = (By.XPATH, ".//input[@name='Пароль']")                       # Поле ввода пароля
     AUTH_FORM = (By.XPATH, ".//main//form")                                                 # Форма ввода на странице авторизации
     # Форма восстановления пароля
     RECOVER_PAGE_BUTTON = (By.XPATH, ".//button[text()='Восстановить']")                    # Кнопка "Восстановить" на странице восстановления пароля
